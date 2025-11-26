@@ -1,0 +1,53 @@
+Se ejecuta el DOckerfile para la imagen de Jenkins
+
+Se crea una estructura de carpetas
+ci-demo/
+ ├── main.py
+ └── test_main.py
+ └── Jenkinsfile
+
+
+
+
+
+Se crea la imagen de Jenkins 
+
+FROM jenkins/jenkins:lts
+
+USER root
+
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    docker.io
+
+RUN usermod -aG docker jenkins
+
+USER jenkins
+
+
+Se ejecuta 
+
+docker build -t jenkins-python -f Dockerfile.jenkins .
+
+
+Se crea el contenedor 
+docker run -d --name jenkins \
+  -p 8080:8080 \
+  -p 50000:50000 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v jenkins_home:/var/jenkins_home \
+  jenkins-python
+
+
+Se obtienen las credenciales iniciales 
+docker exec -it jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+
+
+
+
+Y entramos a 
+ http://localhost:8080
+
+
+
